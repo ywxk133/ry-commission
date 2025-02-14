@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.commission.mapper.CommissionAccountTransactionMapper">
+    
+    <resultMap type="CommissionAccountTransaction" id="CommissionAccountTransactionResult">
+        <result property="transactionId"    column="transaction_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="amount"    column="amount"    />
+        <result property="balanceAfter"    column="balance_after"    />
+        <result property="transactionType"    column="transaction_type"    />
+        <result property="transactionTime"    column="transaction_time"    />
+        <result property="description"    column="description"    />
+        <result property="adminId"    column="admin_id"    />
+        <result property="isIncrease"    column="is_increase"    />
+    </resultMap>
+
+    <sql id="selectCommissionAccountTransactionVo">
+        select transaction_id, user_id, amount, balance_after, transaction_type, transaction_time, description, admin_id, is_increase from commission_account_transaction
+    </sql>
+
+    <select id="selectCommissionAccountTransactionList" parameterType="CommissionAccountTransaction" resultMap="CommissionAccountTransactionResult">
+        <include refid="selectCommissionAccountTransactionVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="adminId != null "> and admin_id = #{adminId}</if>
+            <if test="isIncrease != null "> and is_increase = #{isIncrease}</if>
+        </where>
+        order by transaction_time desc
+    </select>
+    
+    <select id="selectCommissionAccountTransactionByTransactionId" parameterType="Long" resultMap="CommissionAccountTransactionResult">
+        <include refid="selectCommissionAccountTransactionVo"/>
+        where transaction_id = #{transactionId}
+    </select>
+
+    <insert id="insertCommissionAccountTransaction" parameterType="CommissionAccountTransaction" useGeneratedKeys="true" keyProperty="transactionId">
+        insert into commission_account_transaction
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="amount != null">amount,</if>
+            <if test="balanceAfter != null">balance_after,</if>
+            <if test="transactionType != null and transactionType != ''">transaction_type,</if>
+            <if test="transactionTime != null">transaction_time,</if>
+            <if test="description != null">description,</if>
+            <if test="adminId != null">admin_id,</if>
+            <if test="isIncrease != null">is_increase,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="balanceAfter != null">#{balanceAfter},</if>
+            <if test="transactionType != null and transactionType != ''">#{transactionType},</if>
+            <if test="transactionTime != null">#{transactionTime},</if>
+            <if test="description != null">#{description},</if>
+            <if test="adminId != null">#{adminId},</if>
+            <if test="isIncrease != null">#{isIncrease},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCommissionAccountTransaction" parameterType="CommissionAccountTransaction">
+        update commission_account_transaction
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="balanceAfter != null">balance_after = #{balanceAfter},</if>
+            <if test="transactionType != null and transactionType != ''">transaction_type = #{transactionType},</if>
+            <if test="transactionTime != null">transaction_time = #{transactionTime},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="adminId != null">admin_id = #{adminId},</if>
+            <if test="isIncrease != null">is_increase = #{isIncrease},</if>
+        </trim>
+        where transaction_id = #{transactionId}
+    </update>
+
+    <delete id="deleteCommissionAccountTransactionByTransactionId" parameterType="Long">
+        delete from commission_account_transaction where transaction_id = #{transactionId}
+    </delete>
+
+    <delete id="deleteCommissionAccountTransactionByTransactionIds" parameterType="String">
+        delete from commission_account_transaction where transaction_id in 
+        <foreach item="transactionId" collection="array" open="(" separator="," close=")">
+            #{transactionId}
+        </foreach>
+    </delete>
+</mapper>

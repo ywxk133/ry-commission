@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.commission.mapper.CommissionAccountBalanceMapper">
+    
+    <resultMap type="CommissionAccountBalance" id="CommissionAccountBalanceResult">
+        <result property="userId"    column="user_id"    />
+        <result property="balance"    column="balance"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectCommissionAccountBalanceVo">
+        select user_id, balance, create_time, update_time from commission_account_balance
+    </sql>
+
+    <select id="selectCommissionAccountBalanceList" parameterType="CommissionAccountBalance" resultMap="CommissionAccountBalanceResult">
+        <include refid="selectCommissionAccountBalanceVo"/>
+        <where>  
+            <if test="balance != null "> and balance = #{balance}</if>
+            <if test="createTime != null "> and create_time like concat('%', #{createTime}, '%')</if>
+            <if test="updateTime != null "> and update_time like concat('%', #{updateTime}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectCommissionAccountBalanceByUserId" parameterType="Long" resultMap="CommissionAccountBalanceResult">
+        <include refid="selectCommissionAccountBalanceVo"/>
+        where user_id = #{userId}
+    </select>
+
+    <insert id="insertCommissionAccountBalance" parameterType="CommissionAccountBalance">
+        insert into commission_account_balance
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="balance != null">balance,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="balance != null">#{balance},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCommissionAccountBalance" parameterType="CommissionAccountBalance">
+        update commission_account_balance
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="balance != null">balance = #{balance},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where user_id = #{userId}
+    </update>
+
+    <delete id="deleteCommissionAccountBalanceByUserId" parameterType="Long">
+        delete from commission_account_balance where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteCommissionAccountBalanceByUserIds" parameterType="String">
+        delete from commission_account_balance where user_id in 
+        <foreach item="userId" collection="array" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+
+    <select id="getBalanceByUserId" resultType="java.math.BigDecimal">
+        SELECT balance
+        FROM commission_account_balance
+        WHERE user_id = #{userId}
+    </select>
+
+    <update id="addCommissionAccountBalance">
+        UPDATE commission_account_balance
+        SET balance = balance + #{commissionAccountBalance.balance}
+        WHERE user_id = #{commissionAccountBalance.userId};
+    </update>
+
+    <update id="decreaseCommissionAccountBalance">
+        UPDATE commission_account_balance
+        SET balance = balance - #{commissionAccountBalance.balance}
+        WHERE user_id = #{commissionAccountBalance.userId} AND balance >= #{commissionAccountBalance.balance};
+    </update>
+</mapper>

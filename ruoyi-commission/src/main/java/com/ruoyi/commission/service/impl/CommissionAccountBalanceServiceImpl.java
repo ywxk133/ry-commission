@@ -1,0 +1,122 @@
+package com.ruoyi.commission.service.impl;
+
+import java.math.BigDecimal;
+import java.util.List;
+import com.ruoyi.common.utils.DateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.ruoyi.commission.mapper.CommissionAccountBalanceMapper;
+import com.ruoyi.commission.domain.CommissionAccountBalance;
+import com.ruoyi.commission.service.ICommissionAccountBalanceService;
+
+/**
+ * 用户余额Service业务层处理
+ * 
+ * @author xing
+ * @date 2025-02-13
+ */
+@Service
+public class CommissionAccountBalanceServiceImpl implements ICommissionAccountBalanceService 
+{
+    @Autowired
+    private CommissionAccountBalanceMapper commissionAccountBalanceMapper;
+
+    /**
+     * 查询用户余额
+     * 
+     * @param userId 用户余额主键
+     * @return 用户余额
+     */
+    @Override
+    public CommissionAccountBalance selectCommissionAccountBalanceByUserId(Long userId)
+    {
+        return commissionAccountBalanceMapper.selectCommissionAccountBalanceByUserId(userId);
+    }
+
+    /**
+     * 查询用户余额列表
+     * 
+     * @param commissionAccountBalance 用户余额
+     * @return 用户余额
+     */
+    @Override
+    public List<CommissionAccountBalance> selectCommissionAccountBalanceList(CommissionAccountBalance commissionAccountBalance)
+    {
+        return commissionAccountBalanceMapper.selectCommissionAccountBalanceList(commissionAccountBalance);
+    }
+
+    /**
+     * 新增用户余额
+     * 
+     * @param commissionAccountBalance 用户余额
+     * @return 结果
+     */
+    @Override
+    public int insertCommissionAccountBalance(CommissionAccountBalance commissionAccountBalance)
+    {
+        commissionAccountBalance.setCreateTime(DateUtils.getNowDate());
+        return commissionAccountBalanceMapper.insertCommissionAccountBalance(commissionAccountBalance);
+    }
+
+    /**
+     * 修改用户余额
+     * 
+     * @param commissionAccountBalance 用户余额
+     * @return 结果
+     */
+    @Override
+    public int updateCommissionAccountBalance(CommissionAccountBalance commissionAccountBalance)
+    {
+        commissionAccountBalance.setUpdateTime(DateUtils.getNowDate());
+        return commissionAccountBalanceMapper.updateCommissionAccountBalance(commissionAccountBalance);
+    }
+
+    /**
+     * 批量删除用户余额
+     * 
+     * @param userIds 需要删除的用户余额主键
+     * @return 结果
+     */
+    @Override
+    public int deleteCommissionAccountBalanceByUserIds(Long[] userIds)
+    {
+        return commissionAccountBalanceMapper.deleteCommissionAccountBalanceByUserIds(userIds);
+    }
+
+    /**
+     * 删除用户余额信息
+     * 
+     * @param userId 用户余额主键
+     * @return 结果
+     */
+    @Override
+    public int deleteCommissionAccountBalanceByUserId(Long userId)
+    {
+        return commissionAccountBalanceMapper.deleteCommissionAccountBalanceByUserId(userId);
+    }
+
+    /**
+     * 查询用户余额
+     */
+    @Override
+    public BigDecimal getBalance(Long userId) {
+        return commissionAccountBalanceMapper.getBalanceByUserId(userId);
+    }
+
+    /**
+     * 增加用户余额
+     * @param commissionAccountBalance
+     * @return
+     */
+    @Override
+    public int addCommissionAccountBalance(CommissionAccountBalance commissionAccountBalance) {
+        return commissionAccountBalanceMapper.addCommissionAccountBalance(commissionAccountBalance);
+    }
+    /**
+     *  减少用户余额
+     */
+    @Override
+    public int decreaseCommissionAccountBalance(CommissionAccountBalance commissionAccountBalance) {
+        return commissionAccountBalanceMapper.decreaseCommissionAccountBalance(commissionAccountBalance);
+    }
+}

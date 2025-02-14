@@ -1,0 +1,25 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>com.ruoyi</groupId>
+        <artifactId>ruoyi</artifactId>
+        <version>3.8.9</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>jar</packaging>
+    <artifactId>ruoyi-commission</artifactId>
+    <dependencies>
+        <!-- 通用工具-->
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-common</artifactId>
+            <version>3.8.9</version>  <!-- 确保添加了版本号 -->
+        </dependency>
+
+
+    </dependencies>
+    <build>
+        <finalName>ruoyi-commission</finalName>
+    </build>
+</project>

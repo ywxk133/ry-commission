@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.commission.mapper.CommissionUserMapper">
+    
+    <resultMap type="CommissionUser" id="CommissionUserResult">
+        <result property="userId"    column="user_id"    />
+        <result property="username"    column="username"    />
+        <result property="password"    column="password"    />
+        <result property="email"    column="email"    />
+        <result property="phone"    column="phone"    />
+        <result property="gender"    column="gender"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="membershipLevel"    column="membership_level"    />
+        <result property="rankLevel"    column="rank_level"    />
+    </resultMap>
+
+    <sql id="selectCommissionUserVo">
+        select user_id, username, password, email, phone, gender, create_time, update_time, parent_id, membership_level, rank_level from commission_user
+    </sql>
+
+    <select id="selectCommissionUserList" parameterType="CommissionUser" resultMap="CommissionUserResult">
+        <include refid="selectCommissionUserVo"/>
+        <where>  
+            <if test="username != null  and username != ''"> and username like concat('%', #{username}, '%')</if>
+            <if test="email != null  and email != ''"> and email like concat('%', #{email}, '%')</if>
+            <if test="phone != null  and phone != ''"> and phone like concat('%', #{phone}, '%')</if>
+            <if test="gender != null "> and gender = #{gender}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="parentId != null "> and parent_id = #{parentId}</if>
+            <if test="membershipLevel != null  and membershipLevel != ''"> and membership_level = #{membershipLevel}</if>
+            <if test="rankLevel != null  and rankLevel != ''"> and rank_level = #{rankLevel}</if>
+        </where>
+    </select>
+    
+    <select id="selectCommissionUserByUserId" parameterType="Long" resultMap="CommissionUserResult">
+        <include refid="selectCommissionUserVo"/>
+        where user_id = #{userId}
+    </select>
+
+    <insert id="insertCommissionUser" parameterType="CommissionUser" useGeneratedKeys="true" keyProperty="userId">
+        insert into commission_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="username != null and username != ''">username,</if>
+            <if test="password != null and password != ''">password,</if>
+            <if test="email != null">email,</if>
+            <if test="phone != null">phone,</if>
+            <if test="gender != null">gender,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="membershipLevel != null">membership_level,</if>
+            <if test="rankLevel != null">rank_level,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="username != null and username != ''">#{username},</if>
+            <if test="password != null and password != ''">#{password},</if>
+            <if test="email != null">#{email},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="gender != null">#{gender},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="membershipLevel != null">#{membershipLevel},</if>
+            <if test="rankLevel != null">#{rankLevel},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCommissionUser" parameterType="CommissionUser">
+        update commission_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="username != null and username != ''">username = #{username},</if>
+            <if test="password != null and password != ''">password = #{password},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="membershipLevel != null">membership_level = #{membershipLevel},</if>
+            <if test="rankLevel != null">rank_level = #{rankLevel},</if>
+        </trim>
+        where user_id = #{userId}
+    </update>
+
+    <delete id="deleteCommissionUserByUserId" parameterType="Long">
+        delete from commission_user where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteCommissionUserByUserIds" parameterType="String">
+        delete from commission_user where user_id in 
+        <foreach item="userId" collection="array" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+</mapper>
