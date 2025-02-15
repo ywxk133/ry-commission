@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import com.ruoyi.commission.domain.dto.OrderRequestDTO;
 import com.ruoyi.commission.enums.TransactionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,6 +74,37 @@ public class CommissionAccountTransactionServiceImpl implements ICommissionAccou
         transaction.setIsIncrease(isIncrease);
         return commissionAccountTransactionMapper.insertCommissionAccountTransaction(transaction);
     }
+    /**
+     * 订单相关余额流水记录
+     */
+    @Override
+    public int saveBalanceTransaction(Long userId, BigDecimal amount, BigDecimal newBalance, TransactionType transactionTypee, BigDecimal orderAmount,String orderAddress,Integer orderDistrictId,String description) {
+
+        CommissionAccountTransaction transaction = new CommissionAccountTransaction();
+        transaction.setUserId(userId);
+        transaction.setOrderAddress(orderAddress);
+        transaction.setOrderDistrictId(orderDistrictId);
+        transaction.setProductPrice(orderAmount);
+        transaction.setAmount(amount);
+        transaction.setBalanceAfter(newBalance);
+        transaction.setTransactionType(transactionTypee.getValue());
+        transaction.setTransactionTime(new Date());
+        transaction.setDescription(description);
+        if(TransactionType.ORDER==transactionTypee){
+            transaction.setIsIncrease(2);
+        }else {
+            transaction.setIsIncrease(1);
+        }
+        return commissionAccountTransactionMapper.insertCommissionAccountTransaction(transaction);
+    }
+
+    @Override
+    public Integer checkWhetherTheCarIsRePurchased(OrderRequestDTO orderRequestDTO) {
+//        orderRequestDTO.setOrderAmount(orderRequestDTO.getOrderAmount().negate());
+        return commissionAccountTransactionMapper.checkWhetherTheCarIsRePurchased(orderRequestDTO);
+    }
+
+
     /**
      * 修改余额流水
      * 

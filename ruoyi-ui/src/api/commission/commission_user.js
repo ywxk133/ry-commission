@@ -42,3 +42,11 @@ export function delCommission_user(userId) {
     method: 'delete'
   })
 }
+// 模拟下单
+export function userSimulationOrder(data) {
+  return request({
+    url: '/commission/commission_user/simulated/ordering',
+    method: 'post',
+    data: data
+  })
+}

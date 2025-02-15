@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.commission.mapper.CommissionUserSalesSummaryMapper">
+    
+    <resultMap type="CommissionUserSalesSummary" id="CommissionUserSalesSummaryResult">
+        <result property="userId"    column="user_id"    />
+        <result property="directSales"    column="direct_sales"    />
+        <result property="teamSales"    column="team_sales"    />
+        <result property="personalSales"    column="personal_sales"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectCommissionUserSalesSummaryVo">
+        select user_id, direct_sales, team_sales, personal_sales, create_time, update_time from commission_user_sales_summary
+    </sql>
+
+    <select id="selectCommissionUserSalesSummaryList" parameterType="CommissionUserSalesSummary" resultMap="CommissionUserSalesSummaryResult">
+        <include refid="selectCommissionUserSalesSummaryVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+        </where>
+    </select>
+    
+    <select id="selectCommissionUserSalesSummaryByUserId" parameterType="Long" resultMap="CommissionUserSalesSummaryResult">
+        <include refid="selectCommissionUserSalesSummaryVo"/>
+        where user_id = #{userId}
+    </select>
+
+    <insert id="insertCommissionUserSalesSummary" parameterType="CommissionUserSalesSummary">
+        insert into commission_user_sales_summary
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="directSales != null">direct_sales,</if>
+            <if test="teamSales != null">team_sales,</if>
+            <if test="personalSales != null">personal_sales,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="directSales != null">#{directSales},</if>
+            <if test="teamSales != null">#{teamSales},</if>
+            <if test="personalSales != null">#{personalSales},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCommissionUserSalesSummary" parameterType="CommissionUserSalesSummary">
+        update commission_user_sales_summary
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="directSales != null">direct_sales = #{directSales},</if>
+            <if test="teamSales != null">team_sales = #{teamSales},</if>
+            <if test="personalSales != null">personal_sales = #{personalSales},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where user_id = #{userId}
+    </update>
+
+    <delete id="deleteCommissionUserSalesSummaryByUserId" parameterType="Long">
+        delete from commission_user_sales_summary where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteCommissionUserSalesSummaryByUserIds" parameterType="String">
+        delete from commission_user_sales_summary where user_id in 
+        <foreach item="userId" collection="array" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+
+    <update id="personalConsumptionIncreased">
+        UPDATE commission_user_sales_summary
+        SET personal_sales = personal_sales + #{amount},
+            update_time = CURRENT_TIMESTAMP
+        WHERE user_id = #{userId}
+    </update>
+
+
+    <!-- 根据 userId 增加 team_sales 销售额 -->
+    <update id="increaseTeamSales" parameterType="map">
+        <foreach collection="users" item="user" index="index">
+            UPDATE commission_user_sales_summary
+            SET team_sales = team_sales + #{amount},
+            update_time = CURRENT_TIMESTAMP
+            WHERE user_id = #{user.userId}
+        </foreach>
+    </update>
+    <!-- 更新指定用户的团队销售额 -->
+    <update id="updateTeamSales" parameterType="map">
+        UPDATE commission_user_sales_summary
+        SET team_sales = team_sales + #{amount},
+            update_time = CURRENT_TIMESTAMP
+        WHERE user_id = #{userId}
+    </update>
+    <!-- 根据 userId 增加 direct_sales 销售额 -->
+    <update id="increaseDirectSales" parameterType="map">
+        UPDATE commission_user_sales_summary
+        SET direct_sales = direct_sales + #{amount},
+            update_time = CURRENT_TIMESTAMP
+        WHERE user_id = #{userId}
+    </update>
+</mapper>

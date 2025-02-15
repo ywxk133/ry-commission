@@ -2,7 +2,9 @@ package com.ruoyi.commission.mapper;
 
 import java.util.List;
 import com.ruoyi.commission.domain.CommissionAccountTransaction;
+import com.ruoyi.commission.domain.dto.OrderRequestDTO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 余额流水Mapper接口
@@ -60,4 +62,6 @@ public interface CommissionAccountTransactionMapper
      * @return 结果
      */
     public int deleteCommissionAccountTransactionByTransactionIds(Long[] transactionIds);
+    // 检查是否有历史订单
+    Integer checkWhetherTheCarIsRePurchased(@Param("orderRequestDTO") OrderRequestDTO orderRequestDTO);
 }

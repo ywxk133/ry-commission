@@ -8,7 +8,13 @@ public enum TransactionType {
     // 退款
     REFUND("refund"),
     // 管理员调整
-    MANUAL_ADJUSTMENT("manual_adjustment");
+    MANUAL_ADJUSTMENT("manual_adjustment"),
+    // 直推奖励
+    DIRECT_PUSH_REWARD("direct_push_reward"),
+    // 团队分成
+    TEAM_DIFF_REWARD("team_differential_reward"),
+    // 代理分成
+    AGENCY_SHARING("agency_sharing");
     // 枚举值
     private final String value;
 

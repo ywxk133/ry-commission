@@ -5,7 +5,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ruoyi.commission.domain.CommissionAccountBalance;
+import com.ruoyi.commission.domain.dto.OrderRequestDTO;
 import com.ruoyi.commission.service.ICommissionAccountBalanceService;
+import com.ruoyi.commission.service.ICommissionLevelUpgradeConfigService;
+import com.ruoyi.commission.service.IUserAgentService;
 import com.ruoyi.common.utils.SecurityUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +43,9 @@ public class CommissionUserController extends BaseController
     private ICommissionUserService commissionUserService;
     @Autowired
     private ICommissionAccountBalanceService commissionAccountBalanceService;
+    @Autowired
+    private ICommissionLevelUpgradeConfigService commissionLevelUpgradeConfigService;
+
     /**
      * 查询用户管理列表
      */
@@ -83,12 +89,7 @@ public class CommissionUserController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody CommissionUser commissionUser)
     {
-            // 新用户无资格设置用户级别
-            commissionUser.setRankLevel(null);
-            // 1. 加密密码
-            commissionUser.setPassword(SecurityUtils.encryptPassword(commissionUser.getPassword()));
-
-            // 2. 插入用户 并创建余额
+            // 插入用户 加密密码 并创建余额等配置
             return toAjax(commissionUserService.insertCommissionUser(commissionUser));
     }
 
@@ -102,7 +103,15 @@ public class CommissionUserController extends BaseController
     {
         // 无法直接修改密码
         commissionUser.setPassword(null);
-        return toAjax(commissionUserService.updateCommissionUser(commissionUser));
+        if(commissionUser.getRankLevel() ==null){
+            return toAjax(commissionUserService.updateCommissionUser(commissionUser));
+        }
+        Boolean b = commissionLevelUpgradeConfigService.userUpgradeJudgment(commissionUser.getUserId(), commissionUser.getRankLevel());
+        if(b){
+            return toAjax(commissionUserService.updateCommissionUser(commissionUser));
+        }else{
+            return error("暂不满足级别更改");
+        }
     }
 
     /**
@@ -115,4 +124,13 @@ public class CommissionUserController extends BaseController
     {
         return toAjax(commissionUserService.deleteCommissionUserByUserIds(userIds));
     }
+    /**
+     * 用户模拟下单
+     */
+    @PostMapping("/simulated/ordering")
+    public AjaxResult userSimulationOrder(@RequestBody OrderRequestDTO orderRequestDTO){
+
+        return toAjax(commissionUserService.userSimulationOrder(orderRequestDTO));
+    }
+
 }

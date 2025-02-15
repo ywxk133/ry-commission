@@ -3,6 +3,7 @@ package com.ruoyi.commission.service;
 import java.math.BigDecimal;
 import java.util.List;
 import com.ruoyi.commission.domain.CommissionAccountBalance;
+import com.ruoyi.commission.domain.dto.OrderRequestDTO;
 
 /**
  * 用户余额Service接口
@@ -74,4 +75,6 @@ public interface ICommissionAccountBalanceService
      *  减少用户余额
      */
     int decreaseCommissionAccountBalance(CommissionAccountBalance commissionAccountBalance);
+
+
 }

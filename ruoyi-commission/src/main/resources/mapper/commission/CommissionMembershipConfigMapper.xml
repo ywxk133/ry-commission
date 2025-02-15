@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.commission.mapper.CommissionMembershipConfigMapper">
+    
+    <resultMap type="CommissionMembershipConfig" id="CommissionMembershipConfigResult">
+        <result property="membershipLevel"    column="membership_level"    />
+        <result property="directPushReward"    column="direct_push_reward"    />
+        <result property="repurchasePercentage"    column="repurchase_percentage"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectCommissionMembershipConfigVo">
+        select membership_level, direct_push_reward, repurchase_percentage, create_time, update_time from commission_membership_config
+    </sql>
+
+    <select id="selectCommissionMembershipConfigList" parameterType="CommissionMembershipConfig" resultMap="CommissionMembershipConfigResult">
+        <include refid="selectCommissionMembershipConfigVo"/>
+        <where>  
+            <if test="membershipLevel != null  and membershipLevel != ''"> and membership_level = #{membershipLevel}</if>
+            <if test="directPushReward != null "> and direct_push_reward = #{directPushReward}</if>
+            <if test="repurchasePercentage != null "> and repurchase_percentage = #{repurchasePercentage}</if>
+        </where>
+    </select>
+    
+    <select id="selectCommissionMembershipConfigByMembershipLevel" parameterType="String" resultMap="CommissionMembershipConfigResult">
+        <include refid="selectCommissionMembershipConfigVo"/>
+        where membership_level = #{membershipLevel}
+    </select>
+
+    <insert id="insertCommissionMembershipConfig" parameterType="CommissionMembershipConfig">
+        insert into commission_membership_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="membershipLevel != null">membership_level,</if>
+            <if test="directPushReward != null">direct_push_reward,</if>
+            <if test="repurchasePercentage != null">repurchase_percentage,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="membershipLevel != null">#{membershipLevel},</if>
+            <if test="directPushReward != null">#{directPushReward},</if>
+            <if test="repurchasePercentage != null">#{repurchasePercentage},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCommissionMembershipConfig" parameterType="CommissionMembershipConfig">
+        update commission_membership_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="directPushReward != null">direct_push_reward = #{directPushReward},</if>
+            <if test="repurchasePercentage != null">repurchase_percentage = #{repurchasePercentage},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where membership_level = #{membershipLevel}
+    </update>
+
+    <delete id="deleteCommissionMembershipConfigByMembershipLevel" parameterType="String">
+        delete from commission_membership_config where membership_level = #{membershipLevel}
+    </delete>
+
+    <delete id="deleteCommissionMembershipConfigByMembershipLevels" parameterType="String">
+        delete from commission_membership_config where membership_level in 
+        <foreach item="membershipLevel" collection="array" open="(" separator="," close=")">
+            #{membershipLevel}
+        </foreach>
+    </delete>
+
+    <select id="checkIfTheUserHasAMatchingOffer" resultMap="CommissionMembershipConfigResult">
+        select cmc.* from  commission_user cu
+            left join commission_membership_config cmc
+            on cu.membership_level = cmc.membership_level
+            where cu.user_id = #{userId}
+
+    </select>
+
+    <select id="referralRewardInquiry" resultType="com.ruoyi.commission.domain.CommissionMembershipConfig">
+        select cmc.* from  commission_user cu
+        left join commission_membership_config cmc
+        on cu.membership_level = cmc.membership_level
+        where cu.user_id =
+        (select user_id  from commission_user where parent_id = #{userId})
+
+    </select>
+</mapper>

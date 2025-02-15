@@ -2,6 +2,7 @@ package com.ruoyi.commission.service;
 
 import java.util.List;
 import com.ruoyi.commission.domain.CommissionUser;
+import com.ruoyi.commission.domain.dto.OrderRequestDTO;
 
 /**
  * 用户管理Service接口
@@ -58,4 +59,9 @@ public interface ICommissionUserService
      * @return 结果
      */
     public int deleteCommissionUserByUserId(Long userId);
+
+    List<CommissionUser> queryAllRefereesOfTheUser(Long userId);
+
+    public int userSimulationOrder(OrderRequestDTO orderRequestDTO);
+
 }

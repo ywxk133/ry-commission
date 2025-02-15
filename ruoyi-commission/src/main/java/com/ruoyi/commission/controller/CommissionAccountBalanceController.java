@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ruoyi.commission.domain.CommissionAccountTransaction;
+import com.ruoyi.commission.domain.dto.OrderRequestDTO;
 import com.ruoyi.commission.enums.TransactionType;
 import com.ruoyi.commission.service.ICommissionAccountTransactionService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -153,10 +154,10 @@ public class CommissionAccountBalanceController extends BaseController
         // 记录日志，记录操作前后余额
         Long adminId = getLoginUser().getUserId();;
         commissionAccountTransactionService.saveBalanceTransaction(commissionAccountBalance.getUserId(),
-                transactionAmount, newBalance,
+                transactionAmount.negate(), newBalance,
                 TransactionType.MANUAL_ADJUSTMENT,
                 "管理员减少金额",
-                0,adminId);
+                2,adminId);
 
         return result;
     }
@@ -173,5 +174,6 @@ public class CommissionAccountBalanceController extends BaseController
 //        return toAjax(commissionAccountBalanceService.deleteCommissionAccountBalanceByUserIds(userIds));
         return toAjax(0);
     }
+
 
 }

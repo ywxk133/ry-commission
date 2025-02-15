@@ -55,7 +55,42 @@ public class CommissionAccountTransaction extends BaseEntity
     @Excel(name = "变更类型")
     private Integer isIncrease;
 
-    public void setTransactionId(Long transactionId) 
+    /** 下单地址 */
+    @Excel(name = "下单地址")
+    private String orderAddress;
+
+    /** 下单市区编号 */
+    @Excel(name = "下单市区编号")
+    private Integer orderDistrictId;
+    /** 商品价格 */
+    @Excel(name = "商品价格")
+    private BigDecimal productPrice;
+
+    public BigDecimal getProductPrice() {
+        return productPrice;
+    }
+
+    public void setProductPrice(BigDecimal productPrice) {
+        this.productPrice = productPrice;
+    }
+
+    public String getOrderAddress() {
+        return orderAddress;
+    }
+
+    public void setOrderAddress(String orderAddress) {
+        this.orderAddress = orderAddress;
+    }
+
+    public Integer getOrderDistrictId() {
+        return orderDistrictId;
+    }
+
+    public void setOrderDistrictId(Integer orderDistrictId) {
+        this.orderDistrictId = orderDistrictId;
+    }
+
+    public void setTransactionId(Long transactionId)
     {
         this.transactionId = transactionId;
     }
@@ -149,6 +184,9 @@ public class CommissionAccountTransaction extends BaseEntity
             .append("description", getDescription())
             .append("adminId", getAdminId())
             .append("isIncrease", getIsIncrease())
+            .append("orderAddress", getOrderAddress())
+            .append("orderDistrictId", getOrderDistrictId())
+                .append("productPrice", getProductPrice())
             .toString();
     }
 }

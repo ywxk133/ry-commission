@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.commission.mapper.UserAgentMapper">
+    
+    <resultMap type="UserAgent" id="UserAgentResult">
+        <result property="userId"    column="user_id"    />
+        <result property="agentLevel"    column="agent_level"    />
+        <result property="provinceId"    column="province_id"    />
+        <result property="cityId"    column="city_id"    />
+        <result property="isEnabled"    column="is_enabled"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+    <resultMap type="CommissionUser" id="CommissionUserResult">
+        <result property="userId"    column="user_id"    />
+        <result property="username"    column="username"    />
+        <result property="password"    column="password"    />
+        <result property="email"    column="email"    />
+        <result property="phone"    column="phone"    />
+        <result property="gender"    column="gender"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="membershipLevel"    column="membership_level"    />
+        <result property="rankLevel"    column="rank_level"    />
+    </resultMap>
+    <sql id="selectUserAgentVo">
+        select user_id, agent_level, province_id, city_id, is_enabled, create_time, update_time from user_agent
+    </sql>
+
+    <select id="selectUserAgentList" parameterType="UserAgent" resultMap="UserAgentResult">
+        <include refid="selectUserAgentVo"/>
+        <where>  
+            <if test="agentLevel != null "> and agent_level = #{agentLevel}</if>
+            <if test="provinceId != null "> and province_id = #{provinceId}</if>
+            <if test="cityId != null "> and city_id = #{cityId}</if>
+            <if test="isEnabled != null "> and is_enabled = #{isEnabled}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserAgentByUserId" parameterType="Long" resultMap="UserAgentResult">
+        <include refid="selectUserAgentVo"/>
+        where user_id = #{userId}
+    </select>
+
+    <insert id="insertUserAgent" parameterType="UserAgent">
+        insert into user_agent
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="agentLevel != null">agent_level,</if>
+            <if test="provinceId != null">province_id,</if>
+            <if test="cityId != null">city_id,</if>
+            <if test="isEnabled != null">is_enabled,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="agentLevel != null">#{agentLevel},</if>
+            <if test="provinceId != null">#{provinceId},</if>
+            <if test="cityId != null">#{cityId},</if>
+            <if test="isEnabled != null">#{isEnabled},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserAgent" parameterType="UserAgent">
+        update user_agent
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="agentLevel != null">agent_level = #{agentLevel},</if>
+            <if test="provinceId != null">province_id = #{provinceId},</if>
+            <if test="cityId != null">city_id = #{cityId},</if>
+            <if test="isEnabled != null">is_enabled = #{isEnabled},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where user_id = #{userId}
+    </update>
+
+    <delete id="deleteUserAgentByUserId" parameterType="Long">
+        delete from user_agent where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteUserAgentByUserIds" parameterType="String">
+        delete from user_agent where user_id in 
+        <foreach item="userId" collection="array" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+
+    <!-- 查询市级代理用户 -->
+    <select id="getCityLevelUsers" resultMap="CommissionUserResult">
+        SELECT u.user_id, u.username, u.email, u.phone, u.gender, u.create_time, u.update_time, u.parent_id, u.membership_level, u.rank_level
+        FROM commission_user u
+                 JOIN user_agent ua ON u.user_id = ua.user_id
+        WHERE ua.city_id = #{cityId} AND ua.is_enabled = 1;
+
+    </select>
+
+    <!-- 查询省级代理用户 -->
+    <select id="getProvinceLevelUsersByCityId" resultMap="CommissionUserResult">
+        SELECT u.user_id, u.username, u.email, u.phone, u.gender, u.create_time, u.update_time, u.parent_id, u.membership_level, u.rank_level
+        FROM commission_user u
+                 JOIN user_agent ua ON u.user_id = ua.user_id
+        WHERE ua.province_id = (
+            SELECT province_id FROM user_agent WHERE city_id = #{cityId} AND is_enabled = 1
+        ) AND ua.is_enabled = 1 AND ua.agent_level = 1;
+
+    </select>
+</mapper>

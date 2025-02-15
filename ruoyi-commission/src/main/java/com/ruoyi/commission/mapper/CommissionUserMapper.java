@@ -60,4 +60,6 @@ public interface CommissionUserMapper
      * @return 结果
      */
     public int deleteCommissionUserByUserIds(Long[] userIds);
+
+    List<CommissionUser> queryAllRefereesOfTheUser(Long userId);
 }

@@ -1,12 +1,13 @@
 package com.ruoyi.commission.enums;
 
 public enum MembershipLevel {
-        // 普通会员
+        // 普通用户
         ORDINARY("ordinary"),
+        //普通会员
+        ORDINARY_MEMBER("ordinaryMember"),
         // 金牌会员
-        GOLD("gold"),
-        // 铂金会员
-        PLATINUM("platinum");
+        GOLD("gold");
+
 
         private final String value;
         /**

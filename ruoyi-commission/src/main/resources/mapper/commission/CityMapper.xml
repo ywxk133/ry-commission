@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.commission.mapper.CityMapper">
+    
+    <resultMap type="City" id="CityResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="parentId"    column="parentid"    />
+        <result property="shortname"    column="shortname"    />
+        <result property="leveltype"    column="leveltype"    />
+        <result property="citycode"    column="citycode"    />
+        <result property="zipcode"    column="zipcode"    />
+        <result property="lng"    column="lng"    />
+        <result property="lat"    column="lat"    />
+        <result property="pinyin"    column="pinyin"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
+    <sql id="selectCityVo">
+        select id, name, parentid, shortname, leveltype, citycode, zipcode, lng, lat, pinyin, status from city
+    </sql>
+
+    <select id="selectCityList" parameterType="City" resultMap="CityResult">
+        <include refid="selectCityVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="parentId != null "> and parentId = #{parentId}</if>
+            <if test="shortname != null  and shortname != ''"> and shortname like concat('%', #{shortname}, '%')</if>
+            <if test="leveltype != null "> and leveltype = #{leveltype}</if>
+            <if test="citycode != null  and citycode != ''"> and citycode = #{citycode}</if>
+            <if test="zipcode != null  and zipcode != ''"> and zipcode = #{zipcode}</if>
+            <if test="lng != null  and lng != ''"> and lng = #{lng}</if>
+            <if test="lat != null  and lat != ''"> and lat = #{lat}</if>
+            <if test="pinyin != null  and pinyin != ''"> and pinyin = #{pinyin}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectCityById" parameterType="Long" resultMap="CityResult">
+        <include refid="selectCityVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertCity" parameterType="City">
+        insert into city
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="parentId != null">parentId,</if>
+            <if test="shortname != null">shortname,</if>
+            <if test="leveltype != null">leveltype,</if>
+            <if test="citycode != null">citycode,</if>
+            <if test="zipcode != null">zipcode,</if>
+            <if test="lng != null">lng,</if>
+            <if test="lat != null">lat,</if>
+            <if test="pinyin != null">pinyin,</if>
+            <if test="status != null">status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="name != null">#{name},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="shortname != null">#{shortname},</if>
+            <if test="leveltype != null">#{leveltype},</if>
+            <if test="citycode != null">#{citycode},</if>
+            <if test="zipcode != null">#{zipcode},</if>
+            <if test="lng != null">#{lng},</if>
+            <if test="lat != null">#{lat},</if>
+            <if test="pinyin != null">#{pinyin},</if>
+            <if test="status != null">#{status},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCity" parameterType="City">
+        update city
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="parentId != null">parentId = #{parentId},</if>
+            <if test="shortname != null">shortname = #{shortname},</if>
+            <if test="leveltype != null">leveltype = #{leveltype},</if>
+            <if test="citycode != null">citycode = #{citycode},</if>
+            <if test="zipcode != null">zipcode = #{zipcode},</if>
+            <if test="lng != null">lng = #{lng},</if>
+            <if test="lat != null">lat = #{lat},</if>
+            <if test="pinyin != null">pinyin = #{pinyin},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCityById" parameterType="Long">
+        delete from city where id = #{id}
+    </delete>
+
+    <delete id="deleteCityByIds" parameterType="String">
+        delete from city where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

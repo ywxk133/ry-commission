@@ -3,6 +3,7 @@ package com.ruoyi.commission.service;
 import java.math.BigDecimal;
 import java.util.List;
 import com.ruoyi.commission.domain.CommissionAccountTransaction;
+import com.ruoyi.commission.domain.dto.OrderRequestDTO;
 import com.ruoyi.commission.enums.TransactionType;
 
 /**
@@ -62,4 +63,7 @@ public interface ICommissionAccountTransactionService
     public int deleteCommissionAccountTransactionByTransactionId(Long transactionId);
 
     public int saveBalanceTransaction(Long userId, BigDecimal amount, BigDecimal newBalance, TransactionType transactionType, String description, Integer isIncrease, Long adminId) ;
+
+    public int saveBalanceTransaction(Long userId, BigDecimal amount, BigDecimal newBalance, TransactionType transactionTypee, BigDecimal orderAmount,String orderAddress,Integer orderDistrictId,String description);
+    Integer checkWhetherTheCarIsRePurchased(OrderRequestDTO orderRequestDTO);
 }

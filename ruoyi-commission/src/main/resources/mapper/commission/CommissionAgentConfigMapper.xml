@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.commission.mapper.CommissionAgentConfigMapper">
+    
+    <resultMap type="CommissionAgentConfig" id="CommissionAgentConfigResult">
+        <result property="id"    column="id"    />
+        <result property="agentLevel"    column="agent_level"    />
+        <result property="commissionRate"    column="commission_rate"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectCommissionAgentConfigVo">
+        select id, agent_level, commission_rate, create_time, update_time from commission_agent_config
+    </sql>
+
+    <select id="selectCommissionAgentConfigList" parameterType="CommissionAgentConfig" resultMap="CommissionAgentConfigResult">
+        <include refid="selectCommissionAgentConfigVo"/>
+        <where>  
+            <if test="agentLevel != null  and agentLevel != ''"> and agent_level = #{agentLevel}</if>
+        </where>
+    </select>
+    
+    <select id="selectCommissionAgentConfigById" parameterType="Long" resultMap="CommissionAgentConfigResult">
+        <include refid="selectCommissionAgentConfigVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertCommissionAgentConfig" parameterType="CommissionAgentConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into commission_agent_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="agentLevel != null and agentLevel != ''">agent_level,</if>
+            <if test="commissionRate != null">commission_rate,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="agentLevel != null and agentLevel != ''">#{agentLevel},</if>
+            <if test="commissionRate != null">#{commissionRate},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCommissionAgentConfig" parameterType="CommissionAgentConfig">
+        update commission_agent_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="agentLevel != null and agentLevel != ''">agent_level = #{agentLevel},</if>
+            <if test="commissionRate != null">commission_rate = #{commissionRate},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCommissionAgentConfigById" parameterType="Long">
+        delete from commission_agent_config where id = #{id}
+    </delete>
+
+    <delete id="deleteCommissionAgentConfigByIds" parameterType="String">
+        delete from commission_agent_config where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

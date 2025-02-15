@@ -97,4 +97,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{userId}
         </foreach>
     </delete>
+
+    <select id="queryAllRefereesOfTheUser" resultMap="CommissionUserResult">
+        WITH RECURSIVE user_hierarchy AS (
+            -- 初始查询：查找指定用户的父级用户
+            SELECT user_id, username, parent_id, membership_level, rank_level, 1 AS level
+            FROM commission_user
+            WHERE user_id = #{userId}
+              AND parent_id IS NOT NULL  -- 排除用户本身，只查询父级用户
+
+            UNION ALL
+
+            -- 递归查询：查找当前查询结果中的每个用户的上级用户
+            SELECT cu.user_id, cu.username, cu.parent_id, cu.membership_level, cu.rank_level, uh.level + 1
+            FROM commission_user cu
+                     JOIN user_hierarchy uh ON cu.user_id = uh.parent_id  -- 反向连接查找上层用户
+        )
+        SELECT user_id, username, parent_id, membership_level, rank_level, level
+        FROM user_hierarchy
+        ORDER BY level ASC;
+
+
+    </select>
 </mapper>

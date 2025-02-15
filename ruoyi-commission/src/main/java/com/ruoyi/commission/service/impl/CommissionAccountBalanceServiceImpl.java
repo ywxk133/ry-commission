@@ -1,13 +1,23 @@
 package com.ruoyi.commission.service.impl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
+import java.util.Map;
+
+import com.ruoyi.commission.domain.*;
+import com.ruoyi.commission.domain.dto.OrderRequestDTO;
+import com.ruoyi.commission.enums.RankLevel;
+import com.ruoyi.commission.enums.TransactionType;
+import com.ruoyi.commission.service.*;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.commission.mapper.CommissionAccountBalanceMapper;
-import com.ruoyi.commission.domain.CommissionAccountBalance;
-import com.ruoyi.commission.service.ICommissionAccountBalanceService;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 用户余额Service业务层处理
@@ -16,10 +26,12 @@ import com.ruoyi.commission.service.ICommissionAccountBalanceService;
  * @date 2025-02-13
  */
 @Service
-public class CommissionAccountBalanceServiceImpl implements ICommissionAccountBalanceService 
+public class CommissionAccountBalanceServiceImpl implements ICommissionAccountBalanceService
 {
+    private static final Logger logger  =  LoggerFactory.getLogger(CommissionAccountBalanceServiceImpl.class);
     @Autowired
     private CommissionAccountBalanceMapper commissionAccountBalanceMapper;
+
 
     /**
      * 查询用户余额
@@ -119,4 +131,7 @@ public class CommissionAccountBalanceServiceImpl implements ICommissionAccountBa
     public int decreaseCommissionAccountBalance(CommissionAccountBalance commissionAccountBalance) {
         return commissionAccountBalanceMapper.decreaseCommissionAccountBalance(commissionAccountBalance);
     }
+
+
+
 }

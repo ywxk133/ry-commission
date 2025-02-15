@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.commission.mapper.CommissionLevelUpgradeConfigMapper">
+    
+    <resultMap type="CommissionLevelUpgradeConfig" id="CommissionLevelUpgradeConfigResult">
+        <result property="rankLevel"    column="rank_level"    />
+        <result property="requiredGoldMember"    column="required_gold_member"    />
+        <result property="requiredOrdinaryMember"    column="required_ordinary_member"    />
+        <result property="requiredTotalSales"    column="required_total_sales"    />
+        <result property="teamDiffReward"    column="team_diff_reward"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <!-- 新增字段 -->
+        <result property="managerCount" column="manager_count"/>
+        <result property="directorCount" column="director_count"/>
+    </resultMap>
+    <sql id="selectCommissionLevelUpgradeConfigVo">
+        select
+        rank_level,
+        required_gold_member,
+        required_ordinary_member,
+        required_total_sales,
+        team_diff_reward,
+        create_time,
+        update_time,
+        manager_count,    <!-- 新增字段 -->
+        director_count    <!-- 新增字段 -->
+        from commission_level_upgrade_config
+    </sql>
+
+
+    <select id="selectCommissionLevelUpgradeConfigList" parameterType="CommissionLevelUpgradeConfig" resultMap="CommissionLevelUpgradeConfigResult">
+        <include refid="selectCommissionLevelUpgradeConfigVo"/>
+        <where>  
+            <if test="rankLevel != null  and rankLevel != ''"> and rank_level = #{rankLevel}</if>
+        </where>
+    </select>
+    
+    <select id="selectCommissionLevelUpgradeConfigByRankLevel" parameterType="String" resultMap="CommissionLevelUpgradeConfigResult">
+        <include refid="selectCommissionLevelUpgradeConfigVo"/>
+        where rank_level = #{rankLevel}
+    </select>
+
+    <insert id="insertCommissionLevelUpgradeConfig" parameterType="CommissionLevelUpgradeConfig">
+        insert into commission_level_upgrade_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="rankLevel != null">rank_level,</if>
+            <if test="requiredGoldMember != null">required_gold_member,</if>
+            <if test="requiredOrdinaryMember != null">required_ordinary_member,</if>
+            <if test="requiredTotalSales != null">required_total_sales,</if>
+            <if test="teamDiffReward != null">team_diff_reward,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="managerCount != null">manager_count,</if>   <!-- 新增字段 -->
+            <if test="directorCount != null">director_count,</if> <!-- 新增字段 -->
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="rankLevel != null">#{rankLevel},</if>
+            <if test="requiredGoldMember != null">#{requiredGoldMember},</if>
+            <if test="requiredOrdinaryMember != null">#{requiredOrdinaryMember},</if>
+            <if test="requiredTotalSales != null">#{requiredTotalSales},</if>
+            <if test="teamDiffReward != null">#{teamDiffReward},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="managerCount != null">#{managerCount},</if>   <!-- 新增字段 -->
+            <if test="directorCount != null">#{directorCount},</if> <!-- 新增字段 -->
+        </trim>
+    </insert>
+    <update id="updateCommissionLevelUpgradeConfig" parameterType="CommissionLevelUpgradeConfig">
+        update commission_level_upgrade_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="requiredGoldMember != null">required_gold_member = #{requiredGoldMember},</if>
+            <if test="requiredOrdinaryMember != null">required_ordinary_member = #{requiredOrdinaryMember},</if>
+            <if test="requiredTotalSales != null">required_total_sales = #{requiredTotalSales},</if>
+            <if test="teamDiffReward != null">team_diff_reward = #{teamDiffReward},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="managerCount != null">manager_count = #{managerCount},</if>   <!-- 新增字段 -->
+            <if test="directorCount != null">director_count = #{directorCount},</if> <!-- 新增字段 -->
+        </trim>
+        where rank_level = #{rankLevel}
+    </update>
+
+
+    <delete id="deleteCommissionLevelUpgradeConfigByRankLevel" parameterType="String">
+        delete from commission_level_upgrade_config where rank_level = #{rankLevel}
+    </delete>
+
+    <delete id="deleteCommissionLevelUpgradeConfigByRankLevels" parameterType="String">
+        delete from commission_level_upgrade_config where rank_level in 
+        <foreach item="rankLevel" collection="array" open="(" separator="," close=")">
+            #{rankLevel}
+        </foreach>
+    </delete>
+
+    <select id="exampleQueryUserLevelUpgradeInformation"
+            resultType="com.ruoyi.commission.domain.CommissionLevelUpgradeConfig">
+        <!-- 查询金牌会员数量 -->
+        SELECT
+        (SELECT COUNT(*)
+        FROM commission_user
+        WHERE membership_level = 'gold' AND parent_id = #{userId}) AS requiredGoldMember,
+
+        <!-- 查询普通会员数量 -->
+        (SELECT COUNT(*)
+        FROM commission_user
+        WHERE membership_level = 'ordinary' AND parent_id = #{userId}) AS requiredOrdinaryMember,
+        <!-- 查询普通会员数量 -->
+        (SELECT COUNT(*)
+        FROM commission_user
+        WHERE rank_level = 'director' AND parent_id = #{userId}) AS directorCount,
+
+        <!-- 查询普通会员数量 -->
+        (SELECT COUNT(*)
+        FROM commission_user
+        WHERE rank_level = 'manager' AND parent_id = #{userId}) AS managerCount,
+
+        <!-- 查询团队销售额 -->
+        (SELECT team_sales
+        FROM commission_user_sales_summary
+        WHERE user_id = #{userId}) AS requiredTotalSales
+
+    </select>
+
+    <select id="levelConfiguration" resultType="java.util.Map">
+        SELECT rank_level,
+               required_gold_member,
+               required_ordinary_member,
+               required_total_sales,
+               team_diff_reward,
+               create_time,
+               update_time,
+               manager_count,
+               director_count
+        FROM commission_level_upgrade_config
+    </select>
+</mapper>

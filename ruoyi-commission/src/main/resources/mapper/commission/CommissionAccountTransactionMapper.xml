@@ -1,40 +1,53 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.commission.mapper.CommissionAccountTransactionMapper">
-    
+
+    <!-- 结果映射 -->
     <resultMap type="CommissionAccountTransaction" id="CommissionAccountTransactionResult">
-        <result property="transactionId"    column="transaction_id"    />
-        <result property="userId"    column="user_id"    />
-        <result property="amount"    column="amount"    />
-        <result property="balanceAfter"    column="balance_after"    />
-        <result property="transactionType"    column="transaction_type"    />
-        <result property="transactionTime"    column="transaction_time"    />
-        <result property="description"    column="description"    />
-        <result property="adminId"    column="admin_id"    />
-        <result property="isIncrease"    column="is_increase"    />
+        <result property="transactionId" column="transaction_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="amount" column="amount"/>
+        <result property="balanceAfter" column="balance_after"/>
+        <result property="transactionType" column="transaction_type"/>
+        <result property="transactionTime" column="transaction_time"/>
+        <result property="description" column="description"/>
+        <result property="adminId" column="admin_id"/>
+        <result property="isIncrease" column="is_increase"/>
+        <!-- 新增字段 -->
+        <result property="orderAddress" column="order_address"/>
+        <result property="orderDistrictId" column="order_district_id"/>
+        <result property="productPrice" column="product_price"/> <!-- 商品价格 -->
     </resultMap>
 
+    <!-- 查询语句 -->
     <sql id="selectCommissionAccountTransactionVo">
-        select transaction_id, user_id, amount, balance_after, transaction_type, transaction_time, description, admin_id, is_increase from commission_account_transaction
+        select transaction_id, user_id, amount, balance_after, transaction_type, transaction_time, description, admin_id, is_increase,
+        order_address, order_district_id, product_price  <!-- 商品价格 -->
+        from commission_account_transaction
     </sql>
 
+    <!-- 查询列表 -->
     <select id="selectCommissionAccountTransactionList" parameterType="CommissionAccountTransaction" resultMap="CommissionAccountTransactionResult">
         <include refid="selectCommissionAccountTransactionVo"/>
-        <where>  
+        <where>
             <if test="userId != null "> and user_id = #{userId}</if>
             <if test="adminId != null "> and admin_id = #{adminId}</if>
             <if test="isIncrease != null "> and is_increase = #{isIncrease}</if>
+            <!-- 新增的查询条件 -->
+            <if test="orderAddress != null"> and order_address = #{orderAddress}</if>
+            <if test="orderDistrictId != null"> and order_district_id = #{orderDistrictId}</if>
+            <if test="productPrice != null"> and product_price = #{productPrice}</if> <!-- 商品价格条件 -->
         </where>
         order by transaction_time desc
     </select>
-    
+
+    <!-- 根据 transactionId 查询 -->
     <select id="selectCommissionAccountTransactionByTransactionId" parameterType="Long" resultMap="CommissionAccountTransactionResult">
         <include refid="selectCommissionAccountTransactionVo"/>
         where transaction_id = #{transactionId}
     </select>
 
+    <!-- 插入操作 -->
     <insert id="insertCommissionAccountTransaction" parameterType="CommissionAccountTransaction" useGeneratedKeys="true" keyProperty="transactionId">
         insert into commission_account_transaction
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -46,7 +59,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="description != null">description,</if>
             <if test="adminId != null">admin_id,</if>
             <if test="isIncrease != null">is_increase,</if>
-         </trim>
+            <!-- 新增的字段 -->
+            <if test="orderAddress != null">order_address,</if>
+            <if test="orderDistrictId != null">order_district_id,</if>
+            <if test="productPrice != null">product_price,</if> <!-- 商品价格 -->
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">#{userId},</if>
             <if test="amount != null">#{amount},</if>
@@ -56,9 +73,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="description != null">#{description},</if>
             <if test="adminId != null">#{adminId},</if>
             <if test="isIncrease != null">#{isIncrease},</if>
-         </trim>
+            <if test="orderAddress != null">#{orderAddress},</if>
+            <if test="orderDistrictId != null">#{orderDistrictId},</if>
+            <if test="productPrice != null">#{productPrice},</if> <!-- 商品价格 -->
+        </trim>
     </insert>
 
+    <!-- 更新操作 -->
     <update id="updateCommissionAccountTransaction" parameterType="CommissionAccountTransaction">
         update commission_account_transaction
         <trim prefix="SET" suffixOverrides=",">
@@ -70,18 +91,35 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="description != null">description = #{description},</if>
             <if test="adminId != null">admin_id = #{adminId},</if>
             <if test="isIncrease != null">is_increase = #{isIncrease},</if>
+            <if test="orderAddress != null">order_address = #{orderAddress},</if>
+            <if test="orderDistrictId != null">order_district_id = #{orderDistrictId},</if>
+            <if test="productPrice != null">product_price = #{productPrice},</if> <!-- 商品价格 -->
         </trim>
         where transaction_id = #{transactionId}
     </update>
 
+    <!-- 删除操作 -->
     <delete id="deleteCommissionAccountTransactionByTransactionId" parameterType="Long">
         delete from commission_account_transaction where transaction_id = #{transactionId}
     </delete>
 
     <delete id="deleteCommissionAccountTransactionByTransactionIds" parameterType="String">
-        delete from commission_account_transaction where transaction_id in 
+        delete from commission_account_transaction where transaction_id in
         <foreach item="transactionId" collection="array" open="(" separator="," close=")">
             #{transactionId}
         </foreach>
     </delete>
+
+    <!-- 检查是否重复购买 -->
+    <select id="checkWhetherTheCarIsRePurchased" resultType="java.lang.Integer">
+        SELECT EXISTS (
+            SELECT 1
+            FROM commission_account_transaction
+            WHERE user_id = #{orderRequestDTO.userId}
+              AND transaction_type = #{orderRequestDTO.transactionType}
+              AND order_district_id = #{orderRequestDTO.orderDistrictId}
+              AND product_price = #{orderRequestDTO.orderAmount}
+        )
+    </select>
+
 </mapper>
